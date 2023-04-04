@@ -27,6 +27,7 @@ public class TicketService {
     PassengerRepository passengerRepository;
 
 
+
     public Integer bookTicket(BookTicketEntryDto bookTicketEntryDto)throws Exception{
 
         //Check for validity
@@ -41,6 +42,25 @@ public class TicketService {
         //Save the bookedTickets in the train Object
         //Also in the passenger Entity change the attribute bookedTickets by using the attribute bookingPersonId.
        //And the end return the ticketId that has come from db
+
+
+        int sum =0;
+        Train train = trainRepository.findById(bookTicketEntryDto.getTrainId()).get();
+        for(Ticket t : train.getBookedTickets())
+        {
+            sum +=t.getPassengersList().size();
+        }
+
+
+
+        if(train.getNoOfSeats() - sum < bookTicketEntryDto.getNoOfSeats())
+        {
+            throw new Exception("Less tickets are available");
+        }
+
+        // Tickets are Available
+
+
 
        return null;
 
