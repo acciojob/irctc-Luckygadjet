@@ -127,7 +127,7 @@ public class TrainService {
         int count = 0;
         for(Ticket t : train.getBookedTickets())
         {
-            if(t.getFromStation().equals(station.toString()))
+            if(t.getFromStation().equals(station))
             {
                 count +=t.getPassengersList().size();
             }
