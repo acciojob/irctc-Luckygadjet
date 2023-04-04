@@ -54,7 +54,7 @@ public class TrainService {
         return update.getTrainId();
     }
 
-    public Integer calculateAvailableSeats(SeatAvailabilityEntryDto seatAvailabilityEntryDto){
+    public Integer calculateAvailableSeats(SeatAvailabilityEntryDto seatAvailabilityEntryDto) throws Exception {
 
         //Calculate the total seats available
         //Suppose the route is A B C D
@@ -64,8 +64,15 @@ public class TrainService {
         //even if that seat is booked post the destStation or before the boardingStation
         //Inshort : a train has totalNo of seats and there are tickets from and to different locations
         //We need to find out the available seats between the given 2 stations.
+        Train train;
+        try{
+            train = trainRepository.findById(seatAvailabilityEntryDto.getTrainId()).get();
+        }
+        catch (Exception e)
+        {
+            throw  new Exception("Trian Not found");
+        }
 
-        Train train = trainRepository.findById(seatAvailabilityEntryDto.getTrainId()).get();
         List<Ticket> bookedtickets = train.getBookedTickets();
         String[] route = train.getRoute().split(",");
         HashMap<String, Integer> routemap = new HashMap<>();
@@ -144,7 +151,6 @@ public class TrainService {
         //If there are no people travelling in that train you can return 0
         int age = Integer.MIN_VALUE;
 
-
         Train train = trainRepository.findById(trainId).get();
         if(train.getBookedTickets().size() == 0) return 0;
         for(Ticket t : train.getBookedTickets())
@@ -157,7 +163,6 @@ public class TrainService {
                 }
             }
         }
-
         return age;
     }
 
@@ -170,11 +175,13 @@ public class TrainService {
         //You can also assume the seconds and milli seconds value will be 0 in a LocalTime format.
 
         List<Train> trains = trainRepository.findAll();
+        List<Integer> co
+                 = new ArrayList<>();
 
 
 
 
-        return null;
+        return co;
     }
 
 }
