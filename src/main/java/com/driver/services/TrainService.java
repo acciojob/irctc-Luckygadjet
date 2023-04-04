@@ -32,7 +32,7 @@ public class TrainService {
         String str = "";
         for(Station s : trainEntryDto.getStationRoute())
         {
-            str = str + s + ",";
+            str = str + s.toString() + ",";
         }
 
         Train train = new Train();
