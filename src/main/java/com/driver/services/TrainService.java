@@ -142,7 +142,7 @@ public class TrainService {
         //Throughout the journey of the train between any 2 stations
         //We need to find out the age of the oldest person that is travelling the train
         //If there are no people travelling in that train you can return 0
-        int age = Integer.MAX_VALUE;
+        int age = Integer.MIN_VALUE;
 
 
         Train train = trainRepository.findById(trainId).get();
@@ -151,7 +151,7 @@ public class TrainService {
         {
             for(Passenger p : t.getPassengersList())
             {
-                if(p.getAge() < age)
+                if(p.getAge() > age)
                 {
                     age = p.getAge();
                 }
