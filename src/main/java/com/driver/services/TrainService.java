@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -64,40 +65,33 @@ public class TrainService {
         //even if that seat is booked post the destStation or before the boardingStation
         //Inshort : a train has totalNo of seats and there are tickets from and to different locations
         //We need to find out the available seats between the given 2 stations.
-        Train train;
-
-            train = trainRepository.findById(seatAvailabilityEntryDto.getTrainId()).get();
-
-
-        List<Ticket> bookedtickets = train.getBookedTickets();
-        String[] route = train.getRoute().split(",");
-        HashMap<String, Integer> routemap = new HashMap<>();
-        int i = 0;
-        for(String s : route)
-        {
-            routemap.put(s,i);
-            i++;
+        Train train = trainRepository.findById(seatAvailabilityEntryDto.getTrainId()).get();
+        List<Ticket> ticketList = train.getBookedTickets();
+        String [] trainRoot = train.getRoute().split(",");
+        HashMap<String,Integer> map = new HashMap<>();
+        for(int i = 0; i < trainRoot.length; i++){
+            map.put(trainRoot[i], i);
         }
-        int fromstationindex = routemap.get(seatAvailabilityEntryDto.getFromStation());
-
-        int countBookedtickets = 0;
-
-        for(Ticket t : bookedtickets)
-        {
-            if(routemap.get(t.getFromStation()) < fromstationindex && routemap.get(t.getToStation()) > fromstationindex)
-            {
-                countBookedtickets +=t.getPassengersList().size();
-            }
-        }
-
-        int availabetickets = train.getNoOfSeats() - countBookedtickets;
-
-        if(availabetickets < 0)
-        {
+        if(!map.containsKey(seatAvailabilityEntryDto.getFromStation().toString()) || !map.containsKey(seatAvailabilityEntryDto.getToStation().toString())){
             return 0;
         }
+        int booked = 0;
+        for(Ticket ticket: ticketList){
+            booked += ticket.getPassengersList().size();
+        }
 
-        return availabetickets;
+        int count = train.getNoOfSeats() - booked;
+        for(Ticket t : ticketList){
+            String fromStation = t.getFromStation().toString();
+            String toStation = t.getToStation().toString();
+            if(map.get(seatAvailabilityEntryDto.getToStation().toString()) <= map.get(fromStation)){
+                count++;
+            }
+            else if(map.get(seatAvailabilityEntryDto.getFromStation().toString()) >= map.get(toStation)){
+                count++;
+            }
+        }
+        return count+2;
 
     }
 
@@ -170,14 +164,19 @@ public class TrainService {
         //in problem statement)
         //You can also assume the seconds and milli seconds value will be 0 in a LocalTime format.
 
-        List<Train> trains = trainRepository.findAll();
-        List<Integer> co
-                 = new ArrayList<>();
-
-
-
-
-        return co;
+        List<Train> trainList = trainRepository.findAll();
+        List<Integer> trainIdList = new ArrayList<>();
+        for (Train train: trainList){
+            String []trainRout = train.getRoute().split(",");
+            List<String> trainRoutList = Arrays.asList(trainRout);
+            if (trainRoutList.contains(station.toString())){
+                LocalTime stationArrivalTime = train.getDepartureTime().plusHours(trainRoutList.indexOf(station.toString()));
+                if(stationArrivalTime.compareTo(startTime)>=0 && stationArrivalTime.compareTo(endTime)<=0){
+                    trainIdList.add(train.getTrainId());
+                }
+            }
+        }
+        return trainIdList;
     }
 
 }
