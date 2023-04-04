@@ -48,7 +48,6 @@ public class TicketService {
        //And the end return the ticketId that has come from db
 
         Train train = trainRepository.findById(bookTicketEntryDto.getTrainId()).get();
-
         String s = train.getRoute();
         int count =0, startStationIndex = 0, endStationIndex = 0;
         String[] list = s.split(",");
@@ -65,16 +64,17 @@ public class TicketService {
         if(count!=2)
             throw new Exception("Invalid stations");
         else {
+
             SeatAvailabilityEntryDto isAvailable = new SeatAvailabilityEntryDto();
             isAvailable.setTrainId(bookTicketEntryDto.getTrainId());
             isAvailable.setFromStation(bookTicketEntryDto.getFromStation());
             isAvailable.setToStation(bookTicketEntryDto.getToStation());
 
             int availableSeats = trainService.calculateAvailableSeats(isAvailable);
-
             if (bookTicketEntryDto.getNoOfSeats() > availableSeats)
                 throw new Exception("Less tickets are available");
             else {
+
                 List<Integer> passengerIds = bookTicketEntryDto.getPassengerIds();
                 List<Passenger> passengers = new ArrayList<>();
 
