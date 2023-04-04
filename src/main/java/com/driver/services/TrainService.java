@@ -65,12 +65,15 @@ public class TrainService {
         //Inshort : a train has totalNo of seats and there are tickets from and to different locations
         //We need to find out the available seats between the given 2 stations.
         Train train;
-
+        try{
             train = trainRepository.findById(seatAvailabilityEntryDto.getTrainId()).get();
-
+        }
+        catch (Exception e)
+        {
+            throw  new Exception("Trian Not found");
+        }
 
         List<Ticket> bookedtickets = train.getBookedTickets();
-        if(bookedtickets.size() >=0) return 0;
         String[] route = train.getRoute().split(",");
         HashMap<String, Integer> routemap = new HashMap<>();
         int i = 0;
