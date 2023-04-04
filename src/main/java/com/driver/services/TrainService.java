@@ -28,15 +28,23 @@ public class TrainService {
         //and route String logic to be taken from the Problem statement.
         //Save the train and return the trainId that is generated from the database.
         //Avoid using the lombok library
+        StringBuilder route = new StringBuilder();
+        List<Station> stationList = trainEntryDto.getStationRoute();
 
-        String str = "";
-        for(Station s : trainEntryDto.getStationRoute())
+        for(Station s : stationList)
         {
-            str = str + s.toString() + ",";
+            if(route.length() == 0)
+            {
+                route.append(s.toString());
+            }
+            else {
+                route.append(",");
+                route.append(s.toString());
+            }
         }
 
         Train train = new Train();
-        train.setRoute(str);
+        train.setRoute(route.toString());
         train.setDepartureTime(trainEntryDto.getDepartureTime());
         train.setNoOfSeats(trainEntryDto.getNoOfSeats());
         trainRepository.save(train);
@@ -132,7 +140,7 @@ public class TrainService {
         //Throughout the journey of the train between any 2 stations
         //We need to find out the age of the oldest person that is travelling the train
         //If there are no people travelling in that train you can return 0
-        int age = -1000000;
+        int age = Integer.MAX_VALUE;
 
 
         Train train = trainRepository.findById(trainId).get();
